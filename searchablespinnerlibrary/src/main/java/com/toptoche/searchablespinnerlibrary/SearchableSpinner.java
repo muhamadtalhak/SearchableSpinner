@@ -197,11 +197,6 @@ public class SearchableSpinner extends Spinner implements View.OnTouchListener,
     }
 
     @Override
-     public boolean onTouch(View v, MotionEvent event) {
-         
-     }
-
-    @Override
     public int describeContents() {
         return 0;
     }
