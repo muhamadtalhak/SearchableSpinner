@@ -22,7 +22,7 @@ import android.os.Parcelable;
 
 @SuppressLint("ParcelCreator")
 public class SearchableSpinner extends Spinner implements View.OnTouchListener,
-        SearchableListDialog.SearchableItem {
+        SearchableListDialog.SearchableItem, Parcelable {
 
     public static final int NO_ITEM_SELECTED = -1;
     private Context _context;
