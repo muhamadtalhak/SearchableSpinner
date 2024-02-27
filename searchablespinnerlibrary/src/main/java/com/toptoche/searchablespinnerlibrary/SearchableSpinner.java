@@ -15,7 +15,12 @@ import android.widget.SpinnerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.annotation.SuppressLint;
+import android.os.Handler;
+import android.os.Parcel;
+import android.os.Parcelable;
 
+@SuppressLint("ParcelCreator")
 public class SearchableSpinner extends Spinner implements View.OnTouchListener,
         SearchableListDialog.SearchableItem {
 
@@ -28,6 +33,9 @@ public class SearchableSpinner extends Spinner implements View.OnTouchListener,
     private ArrayAdapter _arrayAdapter;
     private String _strHintText;
     private boolean _isFromInit;
+     
+    public static boolean isSpinnerDialogOpen = false;
+
 
     public SearchableSpinner(Context context) {
         super(context);
@@ -74,28 +82,43 @@ public class SearchableSpinner extends Spinner implements View.OnTouchListener,
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        if (_searchableListDialog.isAdded()) {
-            return true;
-        }
+
         if (event.getAction() == MotionEvent.ACTION_UP) {
-
-            if (null != _arrayAdapter) {
-
-                // Refresh content #6
-                // Change Start
-                // Description: The items were only set initially, not reloading the data in the
-                // spinner every time it is loaded with items in the adapter.
-                _items.clear();
-                for (int i = 0; i < _arrayAdapter.getCount(); i++) {
-                    _items.add(_arrayAdapter.getItem(i));
+             if (!isSpinnerDialogOpen) {
+                isSpinnerDialogOpen = true;
+                if (_searchableListDialog.isAdded()) {
+                    return true;
                 }
-                // Change end.
-                if (!_searchableListDialog.isAdded()) {
-                        _searchableListDialog.show(scanForActivity(_context).getFragmentManager(), "TAG");
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+
+                    if (null != _arrayAdapter) {
+
+                        // Refresh content #6
+                        // Change Start
+                        // Description: The items were only set initially, not reloading the data in the
+                        // spinner every time it is loaded with items in the adapter.
+                        _items.clear();
+                        for (int i = 0; i < _arrayAdapter.getCount(); i++) {
+                            _items.add(_arrayAdapter.getItem(i));
+                        }
+                        // Change end.
+                        if (!_searchableListDialog.isAdded()) {
+                                _searchableListDialog.show(scanForActivity(_context).getFragmentManager(), "TAG");
+                        }
+                    }
                 }
-            }
-        }
-        return true;
+                return true;
+                 
+             }
+             isSpinnerDialogOpen = false;
+         }
+         new Handler().postDelayed(new Runnable() {
+             @Override
+             public void run() {
+                 isSpinnerDialogOpen = false;
+             }
+         }, 500);
+         return true;
     }
 
     @Override
@@ -171,5 +194,20 @@ public class SearchableSpinner extends Spinner implements View.OnTouchListener,
         } else {
             return super.getSelectedItem();
         }
+    }
+
+    @Override
+     public boolean onTouch(View v, MotionEvent event) {
+         
+     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
     }
 }
